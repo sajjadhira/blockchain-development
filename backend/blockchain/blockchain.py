@@ -1,5 +1,5 @@
 
-from backend.blockchain.block import Block
+from backend.blockchain.block import Block, GENESIS_DATA
 
 
 class BlockChain:
@@ -19,12 +19,14 @@ class BlockChain:
 
 
 def main():
+
     blockchain = BlockChain()
     blockchain.add_block('one')
-    blockchain.add_block('two')
-    blockchain.add_block('three')
-    print(blockchain)
-    print(f'blockchain.py __name__: {__name__}')
+    print(blockchain.chain[0].hash == GENESIS_DATA['hash'])
+    # blockchain.add_block('two')
+    # blockchain.add_block('three')
+    # print(blockchain)
+    # print(f'blockchain.py __name__: {__name__}')
 
 
 if __name__ == '__main__':
