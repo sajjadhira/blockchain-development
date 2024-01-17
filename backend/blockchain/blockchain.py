@@ -21,8 +21,8 @@ class BlockChain:
 def main():
 
     blockchain = BlockChain()
-    blockchain.add_block('one')
-    print(blockchain.chain[0].hash == GENESIS_DATA['hash'])
+    # blockchain.add_block('one')
+    # print(blockchain.chain[0].hash == GENESIS_DATA['hash'])
     # blockchain.add_block('two')
     # blockchain.add_block('three')
     # print(blockchain)
