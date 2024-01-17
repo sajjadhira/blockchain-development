@@ -16,7 +16,7 @@ def test_mine_block():
     assert block.data == data
     assert block.last_hash == last_block.hash
     assert hex_to_binary(block.hash)[
-        0:block.dificulty] == '0' * block.dificulty
+        0:block.difficulty] == '0' * block.difficulty
 
 
 def test_genesis():
@@ -37,7 +37,7 @@ def test_quickly_mined_block():
     last_block = Block.mine_block(Block.genesis(), 'foo')
     mined_block = Block.mine_block(last_block, 'bar')
 
-    assert mined_block.dificulty == last_block.dificulty + 1
+    assert mined_block.difficulty == last_block.difficulty + 1
 
 
 def test_slowly_mined_block():
@@ -50,7 +50,7 @@ def test_slowly_mined_block():
 
     mined_block = Block.mine_block(last_block, 'bar')
 
-    assert mined_block.dificulty == last_block.dificulty - 1
+    assert mined_block.difficulty == last_block.difficulty - 1
 
 
 # def test_mined_block_difficulty_limits_at_1():
@@ -70,4 +70,4 @@ def test_slowly_mined_block():
 
 #     mined_block = Block.mine_block(last_block, 'bar')
 
-#     assert mined_block.dificulty == 1
+#     assert mined_block.difficulty == 1

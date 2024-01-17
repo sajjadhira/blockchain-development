@@ -23,7 +23,7 @@ for i in range(1000):
     print(
         f"time less then mine rate: {blockchain.chain[-1].timestamp - blockchain.chain[-2].timestamp < MINE_RATE}")
 
-    print(f"new block difficulty: {blockchain.chain[-1].dificulty}")
+    print(f"new block difficulty: {blockchain.chain[-1].difficulty}")
     print(f"time to mine new block: {time_to_mine}s")
     print(f"average time to add blocks: {average_time}s\n")
     time.sleep(3)
