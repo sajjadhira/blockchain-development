@@ -105,10 +105,9 @@ class Block:
         reconstructed_hash = crypto_hash(
             block.timestamp,
             block.last_hash,
-            block.hash,
             block.data,
-            block.nonce,
-            block.difficulty
+            block.difficulty,
+            block.nonce
         )
 
         if block.hash != reconstructed_hash:
@@ -118,7 +117,7 @@ class Block:
 def main():
     geneis_block = Block.genesis()
     bad_block = Block.mine_block(geneis_block, 'foo')
-    bad_block.last_hash = 'evil_data'
+    # bad_block.last_hash = 'evil_data'
     try:
         Block.is_valid_block(geneis_block, bad_block)
     except Exception as e:
