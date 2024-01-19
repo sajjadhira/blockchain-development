@@ -1,12 +1,13 @@
+import os
+import random
 from flask import Flask, jsonify
 
 from backend.blockchain.blockchain import BlockChain
+from backend.pubsub import PubSub
 
 app = Flask(__name__)
 blockchain = BlockChain()
-
-for i in range(3):
-    blockchain.add_block(i)
+pubsub = PubSub(blockchain)
 
 
 @app.route('/')
@@ -21,11 +22,19 @@ def route_blockchain():
 
 @app.route('/blockchain/mine')
 def route_blockchain_mine():
-    transaction_data = 'stubbed_transaction_data'
+    transaction_data = f'BTC SENT TO SAJJAD: {random.randint(100, 1000)}'
 
     blockchain.add_block(transaction_data)
+    block = blockchain.chain[-1]
+    pubsub.broadcast_block(block)
 
-    return jsonify(blockchain.chain[-1].to_json())
+    return jsonify(block.to_json())
 
 
-app.run()
+PORT = 5000
+
+if os.environ.get('PEER') == 'True':
+    PORT = random.randint(5001, 6000)
+
+
+app.run(port=PORT)

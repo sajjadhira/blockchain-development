@@ -76,6 +76,13 @@ class Block:
         return Block(**GENESIS_DATA)
 
     @staticmethod
+    def from_json(block_json):
+        """
+        Deserialize a block's json representation back into a block instance.
+        """
+        return Block(**block_json)
+
+    @staticmethod
     def adjust_difficulty(last_block, new_timestamp):
         """
         adjust_difficulty: Calculate the adjusted difficulty according to the MINE_RATE.
@@ -103,7 +110,8 @@ class Block:
         """
 
         if block.last_hash != last_block.hash:
-            raise Exception('The block last_hash must be correct')
+            raise Exception(
+                f'The block last_hash must be correct, {block.last_hash} != {last_block.hash}')
 
         if hex_to_binary(block.hash)[0:block.difficulty] != '0' * block.difficulty:
             raise Exception('The proof of work requirement was not met')
@@ -128,7 +136,8 @@ def main():
     bad_block = Block.mine_block(geneis_block, 'foo')
     # bad_block.last_hash = 'evil_data'
     try:
-        Block.is_valid_block(geneis_block, bad_block)
+        block = Block.is_valid_block(geneis_block, bad_block)
+        print(f'is_valid_block: {block}')
     except Exception as e:
         print(f'is_valid_block: {e}')
 

@@ -29,3 +29,11 @@ Make sure to activate virtual environmnet
 ```
 python -m backend.app
 ```
+
+**Run a peer instanace**
+
+Make sure to activate virtual environmnet
+
+```
+export PEER=True && python -m backend.app
+```
