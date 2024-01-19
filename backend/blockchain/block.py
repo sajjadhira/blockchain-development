@@ -1,4 +1,5 @@
 import time
+import random
 from backend.util.crypto_hash import crypto_hash
 from backend.util.hex_to_binary import hex_to_binary
 from backend.config import MINE_RATE
@@ -132,12 +133,17 @@ class Block:
 
 
 def main():
-    geneis_block = Block.genesis()
-    bad_block = Block.mine_block(geneis_block, 'foo')
+    block = Block.genesis()
+    radomNumber = random.randint(0, 100000)
+    block1 = Block.mine_block(block, radomNumber)
+    radomNumber = random.randint(0, 100000)
+    block2 = Block.mine_block(block1, radomNumber)
+    radomNumber = random.randint(0, 100000)
+    block3 = Block.mine_block(block2, radomNumber)
     # bad_block.last_hash = 'evil_data'
     try:
-        block = Block.is_valid_block(geneis_block, bad_block)
-        print(f'is_valid_block: {block}')
+        Block.is_valid_block(block1, block2)
+        print(f'Block is valid: {block3}')
     except Exception as e:
         print(f'is_valid_block: {e}')
 
