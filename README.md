@@ -20,5 +20,12 @@ pip install -r requirements.txt
 Make sure to activate the virtual environmnet.
 
 ```
-python3 -m pytest backend/test
+python -m pytest backend/test
+```
+
+**Run the application and API**
+Make sure to activate virtual environmnet
+
+```
+python -m backend.app
 ```
