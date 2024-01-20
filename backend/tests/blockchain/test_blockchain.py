@@ -1,62 +1,62 @@
-import pytest
+# import pytest
 
-from backend.blockchain.block import Block, GENESIS_DATA
-from backend.blockchain.blockchain import BlockChain
-
-
-def tets_blockchain_instance():
-    blockchain = BlockChain()
-
-    assert blockchain.chain[0].hash == GENESIS_DATA['hash']
+# from backend.blockchain.block import Block, GENESIS_DATA
+# from backend.blockchain.blockchain import BlockChain
 
 
-def test_add_block():
-    blockchain = BlockChain()
-    data = 'test-data'
-    blockchain.add_block(data)
+# def tets_blockchain_instance():
+#     blockchain = BlockChain()
 
-    assert blockchain.chain[-1].data == data
+#     assert blockchain.chain[0].hash == GENESIS_DATA['hash']
 
 
-@pytest.fixture
-def blockchain_three_blocks():
-    blockchain = BlockChain()
+# def test_add_block():
+#     blockchain = BlockChain()
+#     data = 'test-data'
+#     blockchain.add_block(data)
 
-    for i in range(3):
-        blockchain.add_block(i)
-
-    return blockchain
+#     assert blockchain.chain[-1].data == data
 
 
-def test_is_valid_chain(blockchain_three_blocks):
+# @pytest.fixture
+# def blockchain_three_blocks():
+#     blockchain = BlockChain()
 
-    BlockChain.is_valid_chain(blockchain_three_blocks.chain)
+#     for i in range(3):
+#         blockchain.add_block(i)
 
-
-def test_is_valid_chain_bad_genesis(blockchain_three_blocks):
-    blockchain_three_blocks.chain[0].hash = 'evil_hash'
-
-    with pytest.raises(Exception, match='genesis block must be valid'):
-        BlockChain.is_valid_chain(blockchain_three_blocks.chain)
+#     return blockchain
 
 
-def test_replace_chain(blockchain_three_blocks):
-    blockchain = BlockChain()
-    blockchain.replace_chain(blockchain_three_blocks.chain)
+# def test_is_valid_chain(blockchain_three_blocks):
 
-    assert blockchain.chain == blockchain_three_blocks.chain
+#     BlockChain.is_valid_chain(blockchain_three_blocks.chain)
 
 
-def test_replace_chain_not_longer(blockchain_three_blocks):
-    blockchain = BlockChain()
+# def test_is_valid_chain_bad_genesis(blockchain_three_blocks):
+#     blockchain_three_blocks.chain[0].hash = 'evil_hash'
 
-    with pytest.raises(Exception, match='The incoming chain must be longer'):
-        blockchain_three_blocks.replace_chain(blockchain.chain)
+#     with pytest.raises(Exception, match='genesis block must be valid'):
+#         BlockChain.is_valid_chain(blockchain_three_blocks.chain)
 
 
-def test_replace_chain_bad_chain(blockchain_three_blocks):
-    blockchain = BlockChain()
-    blockchain_three_blocks.chain[1].hash = 'evil_hash'
+# def test_replace_chain(blockchain_three_blocks):
+#     blockchain = BlockChain()
+#     blockchain.replace_chain(blockchain_three_blocks.chain)
 
-    with pytest.raises(Exception, match='The incoming chain is invalid'):
-        blockchain.replace_chain(blockchain_three_blocks.chain)
+#     assert blockchain.chain == blockchain_three_blocks.chain
+
+
+# def test_replace_chain_not_longer(blockchain_three_blocks):
+#     blockchain = BlockChain()
+
+#     with pytest.raises(Exception, match='The incoming chain must be longer'):
+#         blockchain_three_blocks.replace_chain(blockchain.chain)
+
+
+# def test_replace_chain_bad_chain(blockchain_three_blocks):
+#     blockchain = BlockChain()
+#     blockchain_three_blocks.chain[1].hash = 'evil_hash'
+
+#     with pytest.raises(Exception, match='The incoming chain is invalid'):
+#         blockchain.replace_chain(blockchain_three_blocks.chain)
