@@ -7,3 +7,11 @@ class TransactionPool:
         Set a transaction in the transaction pool.
         """
         self.transaction_map[transaction.id] = transaction
+
+    def existing_transaction(self, address):
+        """
+        Find a transaction from the transaction pool for an address.
+        """
+        for transaction in self.transaction_map.values():
+            if transaction.input['address'] == address:
+                return transaction
