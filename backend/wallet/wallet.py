@@ -36,7 +36,7 @@ class Wallet:
         """
         Reset the public key to its serialized version.
         """
-        self.public_key_bytes = self.public_key.public_bytes(
+        self.public_key = self.public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
         ).decode('utf-8')
@@ -46,8 +46,14 @@ class Wallet:
         """
         Verify a signature based on the original public key and data.
         """
+
+        deserialize_public_key = serialization.load_pem_public_key(
+            public_key.encode('utf-8'),
+            default_backend()
+        )
+
         try:
-            public_key.verify(
+            deserialize_public_key.verify(
                 signature,
                 json.dumps(data).encode('utf-8'),
                 ec.ECDSA(hashes.SHA256())
