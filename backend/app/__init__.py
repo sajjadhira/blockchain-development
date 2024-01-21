@@ -40,20 +40,31 @@ def route_blockchain_mine():
 
 @app.route('/wallet/transact', methods=['POST'])
 def route_wallet_transact():
-    request_data = request.get_json()
-    transaction = Transaction(
-        wallet,
-        request_data['recipient'],
-        request_data['amount']
-    )
+    transaction_data = request.get_json()
+    transaction = transaction_pool.existing_transaction(wallet.address)
+
+    if transaction:
+        transaction.update(
+            wallet,
+            transaction_data['recipient'],
+            transaction_data['amount']
+        )
+    else:
+        transaction = Transaction(
+            wallet,
+            transaction_data['recipient'],
+            transaction_data['amount']
+        )
 
     pubsub.broadcast_transaction(transaction)
+    transaction_pool.set_transaction(transaction)
 
     return jsonify(transaction.to_json())
 
 
 ROOT_PORT = 5000
 PORT = ROOT_PORT
+
 
 if os.environ.get('PEER') == 'True':
     PORT = random.randint(5001, 6000)
