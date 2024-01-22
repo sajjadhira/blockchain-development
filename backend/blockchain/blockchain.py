@@ -2,6 +2,8 @@
 import time
 import random
 from backend.blockchain.block import Block, GENESIS_DATA
+from backend.config import MINING_REWARD_INPUT
+from backend.wallet.transaction import Transaction
 
 
 class BlockChain:
@@ -70,7 +72,44 @@ class BlockChain:
             block = chain[i]
             last_block = chain[i-1]
             print(f'block: {block}, last_block: {last_block}')
-            # Block.is_valid_block(last_block, block)
+            Block.is_valid_block(last_block, block)
+
+    @staticmethod
+    def is_valid_transaction_chain(chain):
+        """
+        Enforce the rules of a chain composed of blocks of transactions.
+            - Each transaction must only appear once in the chain.
+            - There can only be one mining reward per block.
+            - Each transaction must be valid.
+        """
+
+        # impliment first rule: Each transaction must only appear once in the chain.
+        transaction_ids = set()
+
+        for block in chain:
+
+            has_mining_reward = False
+
+            for transaction_json in block.data:
+                transaction = Transaction.from_json(transaction_json)
+
+                if transaction.input == MINING_REWARD_INPUT:
+                    if has_mining_reward:
+                        raise Exception(
+                            'There can only be one mining reward per block. '
+                            f'Check block with hash: {block.hash}'
+                        )
+
+                    has_mining_reward = True
+
+                if transaction.id in transaction_ids:
+                    raise Exception(
+                        f'Transaction {transaction.id} is not unique')
+                transaction_ids.add(transaction.id)
+
+                Transaction.is_valid_transaction(transaction)
+
+        # impliment second rule: There can only be one mining reward per block.
 
 
 def main():
