@@ -1,5 +1,5 @@
 import time
-import random
+
 from backend.util.crypto_hash import crypto_hash
 from backend.util.hex_to_binary import hex_to_binary
 from backend.config import MINE_RATE
@@ -16,7 +16,7 @@ GENESIS_DATA = {
 
 class Block:
     """
-    Block: A unit of storage.
+    Block: a unit of storage.
     Store transactions in a blockchain that supports a cryptocurrency.
     """
 
@@ -35,8 +35,8 @@ class Block:
             f'last_hash: {self.last_hash}, '
             f'hash: {self.hash}, '
             f'data: {self.data}, '
-            f'data: {self.difficulty}, '
-            f'data: {self.nonce})'
+            f'difficulty: {self.difficulty}, '
+            f'nonce: {self.nonce})'
         )
 
     def __eq__(self, other):
@@ -44,14 +44,13 @@ class Block:
 
     def to_json(self):
         """
-        Serialize the block into a dictionary of its attributes.
+        Serialize the block into a dictionary of its attributes
         """
         return self.__dict__
 
     @staticmethod
     def mine_block(last_block, data):
         """
-        mine_block: Create a block and add it to the blockchain.
         Mine a block based on the given last_block and data, until a block hash
         is found that meets the leading 0's proof of work requirement.
         """
@@ -59,12 +58,12 @@ class Block:
         last_hash = last_block.hash
         difficulty = Block.adjust_difficulty(last_block, timestamp)
         nonce = 0
-        # hash = f'{timestamp}-{last_hash}'
         hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
 
         while hex_to_binary(hash)[0:difficulty] != '0' * difficulty:
             nonce += 1
             timestamp = time.time_ns()
+            difficulty = Block.adjust_difficulty(last_block, timestamp)
             hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
 
         return Block(timestamp, last_hash, hash, data, difficulty, nonce)
@@ -72,7 +71,7 @@ class Block:
     @staticmethod
     def genesis():
         """
-        genesis: Generate the genesis block.
+        Generate the genesis block.
         """
         return Block(**GENESIS_DATA)
 
@@ -86,13 +85,11 @@ class Block:
     @staticmethod
     def adjust_difficulty(last_block, new_timestamp):
         """
-        adjust_difficulty: Calculate the adjusted difficulty according to the MINE_RATE.
+        Calculate the adjusted difficulty according to the MINE_RATE.
         Increase the difficulty for quickly mined blocks.
         Decrease the difficulty for slowly mined blocks.
         """
-
-        mining_time_difference = new_timestamp - last_block.timestamp
-        if mining_time_difference < MINE_RATE:
+        if (new_timestamp - last_block.timestamp) < MINE_RATE:
             return last_block.difficulty + 1
 
         if (last_block.difficulty - 1) > 0:
@@ -103,16 +100,14 @@ class Block:
     @staticmethod
     def is_valid_block(last_block, block):
         """
-        is_valid_block: Validate block by enforcing the following rules:
-        - the block must have the proper last_hash reference
-        - the block must meet the proof of work requirement
-        - the difficulty must only adjust by 1
-        - the block hash must be a valid combination of the block fields
+        Validate block by enforcing the following rules:
+          - the block must have the proper last_hash reference
+          - the block must meet the proof of work requirement
+          - the difficulty must only adjust by 1
+          - the block hash must be a valid combination of the block fields
         """
-
         if block.last_hash != last_block.hash:
-            raise Exception(
-                f'The block last_hash must be correct, {block.last_hash} != {last_block.hash}')
+            raise Exception('The block last_hash must be correct')
 
         if hex_to_binary(block.hash)[0:block.difficulty] != '0' * block.difficulty:
             raise Exception('The proof of work requirement was not met')
@@ -124,8 +119,8 @@ class Block:
             block.timestamp,
             block.last_hash,
             block.data,
-            block.difficulty,
-            block.nonce
+            block.nonce,
+            block.difficulty
         )
 
         if block.hash != reconstructed_hash:
@@ -133,17 +128,12 @@ class Block:
 
 
 def main():
-    block = Block.genesis()
-    radomNumber = random.randint(0, 100000)
-    block1 = Block.mine_block(block, radomNumber)
-    radomNumber = random.randint(0, 100000)
-    block2 = Block.mine_block(block1, radomNumber)
-    radomNumber = random.randint(0, 100000)
-    block3 = Block.mine_block(block2, radomNumber)
-    # bad_block.last_hash = 'evil_data'
+    genesis_block = Block.genesis()
+    bad_block = Block.mine_block(genesis_block, 'foo')
+    bad_block.last_hash = 'evil_data'
+
     try:
-        Block.is_valid_block(block1, block2)
-        print(f'Block is valid: {block3}')
+        Block.is_valid_block(genesis_block, bad_block)
     except Exception as e:
         print(f'is_valid_block: {e}')
 

@@ -1,14 +1,14 @@
-
-import time
-import random
-from backend.blockchain.block import Block, GENESIS_DATA
-from backend.config import MINING_REWARD_INPUT
+from backend.blockchain.block import Block
+from backend.pubsub import PubSub
 from backend.wallet.transaction import Transaction
+from backend.wallet.transaction_pool import TransactionPool
+from backend.wallet.wallet import Wallet
+from backend.config import MINING_REWARD_INPUT
 
 
 class BlockChain:
     """
-    BlockChain: A public ledger of transactions.
+    Blockchain: a public ledger of transactions.
     Implemented as a list of blocks - data sets of transactions
     """
 
@@ -19,17 +19,17 @@ class BlockChain:
         self.chain.append(Block.mine_block(self.chain[-1], data))
 
     def __repr__(self):
-        return f'BlockChain: {self.chain}'
+        return f'Blockchain: {self.chain}'
 
     def replace_chain(self, chain):
         """
-        replace_chain: Replace the local chain with the incoming one if the following applies:
-            - The incoming chain is longer than the local one.
-            - The incoming chain is formatted properly.
+        Replace the local chain with the incoming one if the following applies:
+          - The incoming chain is longer than the local one.
+          - The incoming chain is formatted properly.
         """
-        if (len(chain) <= len(self.chain)):
+        if len(chain) <= len(self.chain):
             raise Exception(
-                'Cannto replace. The incoming chain must be longer.')
+                'Cannot replace. The incoming chain must be longer.')
 
         try:
             BlockChain.is_valid_chain(chain)
@@ -48,22 +48,23 @@ class BlockChain:
     @staticmethod
     def from_json(chain_json):
         """
-        Deserialize a list of serialized blocks into a BlockChain instance.
+        Deserialize a list of serialized blocks into a Blokchain instance.
         The result will contain a chain list of Block instances.
         """
         blockchain = BlockChain()
         blockchain.chain = list(
-            map(lambda block_json: Block.from_json(block_json), chain_json))
+            map(lambda block_json: Block.from_json(block_json), chain_json)
+        )
 
         return blockchain
 
     @staticmethod
     def is_valid_chain(chain):
         """
-        is_valid_chain: Validate the incoming chain.
+        Validate the incoming chain.
         Enforce the following rules of the blockchain:
-            - the chain must start with the genesis block
-            - blocks must be formatted correctly
+          - the chain must start with the genesis block
+          - blocks must be formatted correctly
         """
         if chain[0] != Block.genesis():
             raise Exception('The genesis block must be valid')
@@ -71,8 +72,9 @@ class BlockChain:
         for i in range(1, len(chain)):
             block = chain[i]
             last_block = chain[i-1]
-            print(f'block: {block}, last_block: {last_block}')
             Block.is_valid_block(last_block, block)
+
+        BlockChain.is_valid_transaction_chain(chain)
 
     @staticmethod
     def is_valid_transaction_chain(chain):
@@ -82,16 +84,20 @@ class BlockChain:
             - There can only be one mining reward per block.
             - Each transaction must be valid.
         """
-
-        # impliment first rule: Each transaction must only appear once in the chain.
         transaction_ids = set()
 
-        for block in chain:
-
+        for i in range(len(chain)):
+            block = chain[i]
             has_mining_reward = False
 
             for transaction_json in block.data:
                 transaction = Transaction.from_json(transaction_json)
+
+                if transaction.id in transaction_ids:
+                    raise Exception(
+                        f'Transaction {transaction.id} is not unique')
+
+                transaction_ids.add(transaction.id)
 
                 if transaction.input == MINING_REWARD_INPUT:
                     if has_mining_reward:
@@ -101,32 +107,29 @@ class BlockChain:
                         )
 
                     has_mining_reward = True
+                else:
+                    historic_blockchain = BlockChain()
+                    historic_blockchain.chain = chain[0:i]
+                    historic_balance = Wallet.calculate_balance(
+                        historic_blockchain,
+                        transaction.input['address']
+                    )
 
-                if transaction.id in transaction_ids:
-                    raise Exception(
-                        f'Transaction {transaction.id} is not unique')
-                transaction_ids.add(transaction.id)
+                    if historic_balance != transaction.input['amount']:
+                        raise Exception(
+                            f'Transaction {transaction.id} has an invalid '
+                            'input amount'
+                        )
 
                 Transaction.is_valid_transaction(transaction)
 
-        # impliment second rule: There can only be one mining reward per block.
-
 
 def main():
-
     blockchain = BlockChain()
-    rnadomNumber = random.randint(1000, 9999)
-    blockchain.add_block(rnadomNumber)
-    rnadomNumber = random.randint(1000, 9999)
-    blockchain.add_block(rnadomNumber)
+    blockchain.add_block('one')
+    blockchain.add_block('two')
 
-    try:
-        blockchain = BlockChain()
-        print(f'blockchain: {blockchain.chain[0].last_hash}')
-    #     is_valid_chain = BlockChain.is_valid_chain(blockchain.chain)
-    #     print(f'is_valid_chain: {blockchain.chain}')
-    except Exception as e:
-        print(f'is_valid_chain: {e}')
+    print(blockchain)
 
 
 if __name__ == '__main__':

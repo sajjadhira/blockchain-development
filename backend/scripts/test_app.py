@@ -1,10 +1,12 @@
+import random
 import requests
 import time
 
 from backend.wallet.wallet import Wallet
 
+BASE_PORT = 5000
 
-BASE_URL = 'http://localhost:5000'
+BASE_URL = f'http://localhost:{BASE_PORT}'
 
 
 def get_blockchain():
@@ -30,14 +32,16 @@ start_blockchain = get_blockchain()
 print(f'start_blockchain: {start_blockchain}')
 
 
+radom_amount = random.randint(10, 20)
 recipient = Wallet().address
-post_wallet_transact_1 = post_wallet_transact(recipient, 21)
+post_wallet_transact_1 = post_wallet_transact(recipient, radom_amount)
 
 print(f'\n\n-----\n\npost_wallet_transact_1: {post_wallet_transact_1}')
 
 time.sleep(1)
 
-post_wallet_transact_2 = post_wallet_transact(recipient, 15)
+radom_amount = random.randint(30, 40)
+post_wallet_transact_2 = post_wallet_transact(recipient, radom_amount)
 
 print(f'\n\n-----\n\npost_wallet_transact_2: {post_wallet_transact_2}')
 
