@@ -32,6 +32,7 @@ def route_blockchain_mine():
     blockchain.add_block(transaction_pool.transaction_data())
     block = blockchain.chain[-1]
     pubsub.broadcast_block(block)
+    transaction_pool.clear_blockchain_transactions(blockchain)
 
     return jsonify(block.to_json())
 
@@ -67,7 +68,7 @@ PORT = ROOT_PORT
 if os.environ.get('PEER') == 'True':
     PORT = random.randint(5001, 6000)
     result = requests.get(f'http://localhost:{ROOT_PORT}/blockchain')
-    print(result.json())
+    # print(result.json())
     result_blockchain = BlockChain.from_json(result.json())
     try:
         blockchain.replace_chain(result_blockchain.chain)

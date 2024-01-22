@@ -1,5 +1,3 @@
-import re
-
 
 class TransactionPool:
     def __init__(self):
@@ -30,3 +28,14 @@ class TransactionPool:
             map(lambda transaction: transaction.to_json(), transaction_values))
 
         return transaction_data
+
+    def clear_blockchain_transactions(self, blockchain):
+        """
+        Clear the pool of any existing blockchain transactions.
+        """
+        for block in blockchain.chain:
+            for transaction in block.data:
+                try:
+                    del self.transaction_map[transaction['id']]
+                except KeyError:
+                    pass

@@ -84,7 +84,7 @@ class Transaction:
         if transaction.input['amount'] != output_total:
             raise Exception('Invalid transaction output values')
 
-        if transaction.inpup['amount'] == 0:
+        if transaction.input['amount'] == 0:
             raise Exception('Invalid transaction input values')
 
         if not Wallet.verify(
