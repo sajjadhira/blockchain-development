@@ -1,5 +1,6 @@
 import json
 import uuid
+from backend.blockchain.blockchain import BlockChain
 from backend.config import STARTING_BALANCE
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -17,14 +18,23 @@ class Wallet:
     Allows a miner to authorize transactions.
     """
 
-    def __init__(self):
+    def __init__(self, blockchain=None, address=None):
+        self.blockchain = blockchain
         self.address = str(uuid.uuid4())[0:8]
-        self.balance = STARTING_BALANCE
         self.private_key = ec.generate_private_key(
             ec.SECP256K1(), default_backend()
         )
         self.public_key = self.private_key.public_key()
         self.serialize_public_key()
+
+    @property
+    def balance(self):
+        """
+        Calculate the balance of the wallet based on the blockchain.
+        The balance is found by adding the output values that belong to the
+        wallet address.
+        """
+        return Wallet.calculate_balance(self.blockchain, self.address)
 
     def sign(self, data):
         """
@@ -77,8 +87,11 @@ class Wallet:
         The balance is found by adding the output values that belong to the
         address since the most recent transaction by that address.
         """
-
         balance = STARTING_BALANCE
+
+        if not blockchain:
+            return balance
+
         for block in blockchain.chain:
             for transaction in block.data:
                 if transaction['input']['address'] == address:

@@ -22,6 +22,10 @@ def post_wallet_transact(recipient, amount):
     ).json()
 
 
+def get_wallet_info():
+    return requests.get(f'{BASE_URL}/wallet/info').json()
+
+
 start_blockchain = get_blockchain()
 print(f'start_blockchain: {start_blockchain}')
 
@@ -43,3 +47,8 @@ time.sleep(1)
 mined_block = get_blockchain_mine()
 
 print(f'\n\n-----\n\nmined_block: {mined_block}')
+
+
+wallet_info = get_wallet_info()
+
+print(f'\n\n-----\n\nwallet_info: {wallet_info}')
