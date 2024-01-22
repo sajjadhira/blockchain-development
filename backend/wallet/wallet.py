@@ -1,6 +1,6 @@
 import json
 import uuid
-from backend.blockchain.blockchain import BlockChain
+# from backend.blockchain.blockchain import BlockChain
 from backend.config import STARTING_BALANCE
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import ec

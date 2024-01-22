@@ -121,8 +121,10 @@ def main():
     blockchain.add_block(rnadomNumber)
 
     try:
-        is_valid_chain = BlockChain.is_valid_chain(blockchain.chain)
-        print(f'is_valid_chain: {blockchain.chain}')
+        blockchain = BlockChain()
+        print(f'blockchain: {blockchain.chain[0].last_hash}')
+    #     is_valid_chain = BlockChain.is_valid_chain(blockchain.chain)
+    #     print(f'is_valid_chain: {blockchain.chain}')
     except Exception as e:
         print(f'is_valid_chain: {e}')
 
