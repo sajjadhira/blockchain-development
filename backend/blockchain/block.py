@@ -20,10 +20,10 @@ class Block:
     Store transactions in a blockchain that supports a cryptocurrency.
     """
 
-    def __init__(self, timestamp, last_hash, hash, data, difficulty, nonce):
+    def __init__(self, timestamp, last_hash, data, difficulty, nonce, hash):
+        self.hash = hash
         self.timestamp = timestamp
         self.last_hash = last_hash
-        self.hash = hash
         self.data = data
         self.difficulty = difficulty
         self.nonce = nonce
@@ -64,9 +64,20 @@ class Block:
             nonce += 1
             timestamp = time.time_ns()
             difficulty = Block.adjust_difficulty(last_block, timestamp)
-            hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
+            hash = \
+                crypto_hash(
+                    timestamp,
+                    last_hash,
+                    data,
+                    difficulty,
+                    nonce
+                )
 
-        return Block(timestamp, last_hash, hash, data, difficulty, nonce)
+        return Block(timestamp, last_hash, data, difficulty, nonce, hash)
+
+    @staticmethod
+    def computing(hash, difficulty):
+        return hex_to_binary(hash)[0:difficulty] == '0' * difficulty
 
     @staticmethod
     def genesis():
@@ -78,9 +89,26 @@ class Block:
     @staticmethod
     def from_json(block_json):
         """
-        Deserialize a block's json representation back into a block instance.
+        Deserialize a block's JSON representation back into a Block instance.
+
+        Args:
+        block_json (dict): A dictionary representing the block's attributes.
+
+        Returns:
+        Block: A Block instance.
+
+        Raises:
+        ValueError: If the JSON does not match the expected format.
         """
-        return Block(**block_json)
+        # Example validation, modify as per your Block's constructor requirements
+        required_keys = ['data', 'timestamp', 'last_hash', 'nonce', 'hash']
+        if not all(key in block_json for key in required_keys):
+            raise ValueError("JSON object does not match the expected format.")
+
+        try:
+            return Block(**block_json)
+        except TypeError as e:
+            raise ValueError(f"Error in creating Block: {e}")
 
     @staticmethod
     def adjust_difficulty(last_block, new_timestamp):
@@ -119,8 +147,8 @@ class Block:
             block.timestamp,
             block.last_hash,
             block.data,
-            block.nonce,
-            block.difficulty
+            block.difficulty,
+            block.nonce
         )
 
         if block.hash != reconstructed_hash:
@@ -129,11 +157,23 @@ class Block:
 
 def main():
     genesis_block = Block.genesis()
-    bad_block = Block.mine_block(genesis_block, 'foo')
-    bad_block.last_hash = 'evil_data'
+    new_block1 = Block.mine_block(genesis_block, 'foo')
+    new_block2 = Block.mine_block(new_block1, 'bar')
+    new_block3 = Block.mine_block(new_block2, 'new_block3')
+    reconstructed_hash = crypto_hash(
+        new_block3.timestamp,
+        new_block3.last_hash,
+        new_block3.data,
+        new_block3.difficulty,
+        new_block3.nonce
+    )
+    print(new_block3.hash)
+    print(reconstructed_hash)
+
+    # bad_block.last_hash = 'evil_data'
 
     try:
-        Block.is_valid_block(genesis_block, bad_block)
+        Block.is_valid_block(new_block2, new_block3)
     except Exception as e:
         print(f'is_valid_block: {e}')
 

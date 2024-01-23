@@ -1,5 +1,9 @@
+import json
+from more_itertools import last
+import requests
 from backend.blockchain.block import Block
 from backend.pubsub import PubSub
+from backend.util.crypto_hash import crypto_hash
 from backend.wallet.transaction import Transaction
 from backend.wallet.transaction_pool import TransactionPool
 from backend.wallet.wallet import Wallet
@@ -55,8 +59,16 @@ class BlockChain:
         blockchain.chain = list(
             map(lambda block_json: Block.from_json(block_json), chain_json)
         )
-
         return blockchain
+    # def from_json(chain_json):
+    #     """
+    #     Deserialize a list of serialized blocks into a Blockchain instance.
+    #     The result will contain a chain list of Block instances.
+    #     """
+    #     blockchain = BlockChain()
+    #     for block_json in chain_json:
+    #         blockchain.chain.append(Block.from_json(block_json))
+    #     return blockchain
 
     @staticmethod
     def is_valid_chain(chain):
@@ -125,11 +137,31 @@ class BlockChain:
 
 
 def main():
-    blockchain = BlockChain()
-    blockchain.add_block('one')
-    blockchain.add_block('two')
+    # blockchain = BlockChain()
+    # wallet = Wallet(blockchain)
+    # transaction_pool = TransactionPool()
+    # for i in range(20):
+    #     transaction_data = transaction_pool.transaction_data()
+    #     transaction_data.append(
+    #         Transaction.reward_transaction(wallet).to_json())
+    #     blockchain.add_block(transaction_data)
 
-    print(blockchain)
+    # is valid chain?
+    #  inject evil data to blockchain
+    # blockchain.chain[2].data = 'evil_data'
+
+    mychain = BlockChain()
+    ROOT_PORT = 5000
+    result = requests.get(f'http://localhost:{ROOT_PORT}/blockchain')
+    blockchain = BlockChain.from_json(result.json())
+
+    # print(blockchain.chain)
+
+    try:
+        mychain.replace_chain(blockchain.chain)
+        print('replaced')
+    except Exception as e:
+        print(f'\n -- Error synchronizing: {e}')
 
 
 if __name__ == '__main__':
