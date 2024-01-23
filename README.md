@@ -37,3 +37,17 @@ Make sure to activate virtual environmnet
 ```
 export PEER=True && python -m backend.app
 ```
+
+**Install ReactJS for frontend**
+For install ReactJS for frontend make sure you have install `npm` in your machine.
+If you make sure `npm` is installe in your machine then run command for installing ReactJS as frontend from your root directory,
+
+```
+npx create-react-app frontend
+```
+
+After installing react run your project for running reactjs enter into frontend directory by using command `cd frontend` and then run the command for run react.
+
+```
+npm run start
+```
