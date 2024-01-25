@@ -38,6 +38,14 @@ Make sure to activate virtual environmnet
 export PEER=True && python -m backend.app
 ```
 
+**Seeding Data to BlockChain**
+
+Use tjos command to seeding data to the blockchain. Make sure virtual environment is running on your machine.
+
+```
+export SEED_DATA=True && python -m backend.app
+```
+
 **Install ReactJS for frontend**
 For install ReactJS for frontend make sure you have install `npm` in your machine.
 If you make sure `npm` is installe in your machine then run command for installing ReactJS as frontend from your root directory,
