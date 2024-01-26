@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { API_BASE_URL } from "../config";
-import Blockchain from "./Blockchain";
-import ConductTransaction from "./ConductTransaction";
 
 function App() {
   const [walletInfo, setWalletInfo] = useState({});
@@ -19,14 +18,13 @@ function App() {
       <h3>Welcome To Pychin</h3>
       <img className="logo" src={logo} alt="logo" />
       <br />
+      <Link to="/blockchain">Blockchain</Link>
+      <Link to="/conduct-transaction">Conduct a Transaction</Link>
+      <br />
       <div className="WalletInfo">
         <div>Address: {address}</div>
         <div>Balance: {balance}</div>
       </div>
-
-      <Blockchain />
-      <br />
-      <ConductTransaction />
     </div>
   );
 }
