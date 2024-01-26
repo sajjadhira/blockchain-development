@@ -48,7 +48,7 @@ function Blockchain() {
               key={number}
               onClick={() => fetechBlockchainPage({ start, end })}
             >
-              <Button size="sm" variant="danger">
+              <Button size="sm" variant="danger" className="ms-2 me-2">
                 {number + 1}
               </Button>
             </span>
