@@ -13,13 +13,15 @@ function App() {
   }, []);
 
   const { address, balance } = walletInfo;
+
   return (
     <div className="App">
-      <h3>Welcome To Pychin</h3>
-      <img className="logo" src={logo} alt="logo" />
+      <img className="logo" src={logo} alt="application-logo" />
+      <h3>Welcome to pychain</h3>
       <br />
       <Link to="/blockchain">Blockchain</Link>
       <Link to="/conduct-transaction">Conduct a Transaction</Link>
+      <Link to="/transaction-pool">Transaction Pool</Link>
       <br />
       <div className="WalletInfo">
         <div>Address: {address}</div>

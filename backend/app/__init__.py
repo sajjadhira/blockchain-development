@@ -94,6 +94,11 @@ def route_known_addresses():
     return jsonify(list(known_addresses))
 
 
+@app.route('/transactions')
+def route_transactions():
+    return jsonify(transaction_pool.transaction_data())
+
+
 ROOT_PORT = 5000
 PORT = ROOT_PORT
 
